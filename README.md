@@ -85,7 +85,7 @@ $> ./bin/server  -h
 
 ```
 $> ./bin/server \
-	-spatial-database-uri 'pmtiles://?tiles=file:///usr/local/whosonfirst/go-whosonfirst-tippecanoe&database=wof'
+	-spatial-database-uri 'pmtiles://?tiles=file:///usr/local/data&database=wof'
 ```
 
 And then:
