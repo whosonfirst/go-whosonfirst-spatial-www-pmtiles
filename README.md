@@ -86,6 +86,12 @@ $> ./bin/server  -h
 ```
 $> ./bin/server \
 	-spatial-database-uri 'pmtiles://?tiles=file:///usr/local/data&database=wof'
+
+2022/11/26 09:57:03 Register /data/ handler
+2022/11/26 09:57:03 Register /api/point-in-polygon handler
+2022/11/26 09:57:03 Listening on http://localhost:8080
+2022/11/26 09:57:03 time to index paths (0) 83.545µs
+2022/11/26 09:57:03 finished indexing in 618.003µs
 ```
 
 And then:
