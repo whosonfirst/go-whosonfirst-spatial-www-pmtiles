@@ -3,7 +3,7 @@ module github.com/whosonfirst/go-whosonfirst-spatial-www-pmtiles
 go 1.19
 
 require (
-	github.com/whosonfirst/go-whosonfirst-spatial-pmtiles v0.0.1
+	github.com/whosonfirst/go-whosonfirst-spatial-pmtiles v0.0.2
 	github.com/whosonfirst/go-whosonfirst-spatial-www v0.0.40
 )
 

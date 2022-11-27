@@ -246,7 +246,7 @@ github.com/whosonfirst/go-whosonfirst-spatial/timer
 ## explicit; go 1.18
 github.com/whosonfirst/go-whosonfirst-spatial-pip
 github.com/whosonfirst/go-whosonfirst-spatial-pip/http/api
-# github.com/whosonfirst/go-whosonfirst-spatial-pmtiles v0.0.1
+# github.com/whosonfirst/go-whosonfirst-spatial-pmtiles v0.0.2
 ## explicit; go 1.19
 github.com/whosonfirst/go-whosonfirst-spatial-pmtiles
 # github.com/whosonfirst/go-whosonfirst-spatial-sqlite v0.5.5
