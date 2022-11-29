@@ -9,26 +9,33 @@ import (
 import (
 	"context"
 	"fmt"
+	"github.com/jtacoma/uritemplates"
 	"github.com/paulmach/orb"
 	"github.com/paulmach/orb/encoding/mvt"
 	"github.com/paulmach/orb/geojson"
 	"github.com/paulmach/orb/maptile"
 	"github.com/protomaps/go-pmtiles/pmtiles"
+	"github.com/tidwall/gjson"
+	"github.com/whosonfirst/go-ioutil"
+	"github.com/whosonfirst/go-reader"
 	"github.com/whosonfirst/go-whosonfirst-spatial"
 	"github.com/whosonfirst/go-whosonfirst-spatial/database"
 	"github.com/whosonfirst/go-whosonfirst-spr/v2"
+	"github.com/whosonfirst/go-whosonfirst-uri"
 	"gocloud.dev/docstore"
 	"gocloud.dev/gcerrors"
 	"io"
 	"log"
 	"net/url"
 	"strconv"
-	"time"
+	"strings"
+	"sync"
 )
 
 func init() {
 	ctx := context.Background()
 	database.RegisterSpatialDatabase(ctx, "pmtiles", NewPMTilesSpatialDatabase)
+	reader.RegisterReader(ctx, "pmtiles", NewPMTilesSpatialDatabaseReader)
 }
 
 type PMTilesSpatialDatabase struct {
@@ -37,8 +44,13 @@ type PMTilesSpatialDatabase struct {
 	logger               *log.Logger
 	database             string
 	enable_feature_cache bool
-	feature_cache        *docstore.Collection
-	ticker               *time.Ticker
+	enable_tile_cache    bool
+	cache_manager        *CacheManager
+	zoom                 int
+}
+
+func NewPMTilesSpatialDatabaseReader(ctx context.Context, uri string) (reader.Reader, error) {
+	return NewPMTilesSpatialDatabase(ctx, uri)
 }
 
 func NewPMTilesSpatialDatabase(ctx context.Context, uri string) (database.SpatialDatabase, error) {
@@ -57,18 +69,32 @@ func NewPMTilesSpatialDatabase(ctx context.Context, uri string) (database.Spatia
 	logger := log.Default()
 
 	cache_size := 64
+	zoom := 12
 
-	pm_cache_size := q.Get("pmtiles-cache-size")
+	q_cache_size := q.Get("pmtiles-cache-size")
 
-	if pm_cache_size != "" {
+	if q_cache_size != "" {
 
-		sz, err := strconv.Atoi(pm_cache_size)
+		sz, err := strconv.Atoi(q_cache_size)
 
 		if err != nil {
 			return nil, fmt.Errorf("Failed to parse ?pmtiles-cache-size= parameter, %w", err)
 		}
 
 		cache_size = sz
+	}
+
+	q_zoom := q.Get("zoom")
+
+	if q_zoom != "" {
+
+		z, err := strconv.Atoi(q_zoom)
+
+		if err != nil {
+			return nil, fmt.Errorf("Failed to parse ?zoom= parameter, %w", err)
+		}
+
+		zoom = z
 	}
 
 	loop, err := pmtiles.NewLoop(tile_path, logger, cache_size, "")
@@ -83,65 +109,94 @@ func NewPMTilesSpatialDatabase(ctx context.Context, uri string) (database.Spatia
 		loop:     loop,
 		database: database,
 		logger:   logger,
+		zoom:     zoom,
 	}
 
-	enable_fc := q.Get("enable-feature-cache")
+	enable_cache := false
 
-	if enable_fc != "" {
+	q_enable_cache := q.Get("enable-cache")
 
-		enable_feature_cache, err := strconv.ParseBool(enable_fc)
+	if q_enable_cache != "" {
+
+		enabled, err := strconv.ParseBool(q_enable_cache)
 
 		if err != nil {
-			return nil, fmt.Errorf("Failed to parse ?enable-feature-cache= parameter, %w", err)
+			return nil, fmt.Errorf("Failed to parse ?enable-cache= parameter, %w", err)
 		}
-		db.enable_feature_cache = enable_feature_cache
 
-		if enable_feature_cache {
+		enable_cache = enabled
+	}
 
-			feature_cache_uri := q.Get("feature-cache-uri")
+	if enable_cache {
 
-			feature_cache, err := docstore.OpenCollection(context.Background(), feature_cache_uri)
+		feature_cache_uri_t := "mem://features/{key}"
+		tile_cache_uri_t := "mem://tiles/{key}"
+		cache_ttl := 300
+
+		q_cache_ttl := q.Get("cache-ttl")
+		q_feature_cache_uri_t := q.Get("feature-cache-uri")
+		q_tile_cache_uri_t := q.Get("tile-cache-uri")
+
+		if q_cache_ttl != "" {
+
+			ttl, err := strconv.Atoi(q_cache_ttl)
 
 			if err != nil {
-				return nil, fmt.Errorf("could not open collection: %w", err)
+				return nil, fmt.Errorf("Failed to parse ?cache-ttl= parameter, %w", err)
 			}
 
-			db.feature_cache = feature_cache
-
-			feature_cache_ttl := 300
-
-			str_ttl := q.Get("feature-cache-ttl")
-
-			if str_ttl != "" {
-
-				ttl, err := strconv.Atoi(str_ttl)
-
-				if err != nil {
-					return nil, fmt.Errorf("Failed to parse ?feature-cache-ttl= parameter, %w", err)
-				}
-
-				feature_cache_ttl = ttl
+			if ttl < 0 {
+				return nil, fmt.Errorf("Invalid cache-ttl value")
 			}
 
-			now := time.Now()
-			then := now.Add(time.Duration(-feature_cache_ttl) * time.Second)
-
-			db.pruneFeatureCache(ctx, then)
-
-			ticker := time.NewTicker(time.Duration(feature_cache_ttl) * time.Second)
-
-			go func() {
-
-				for {
-					select {
-					case t := <-ticker.C:
-						db.pruneFeatureCache(ctx, t)
-					}
-				}
-			}()
-
-			db.ticker = ticker
+			cache_ttl = ttl
 		}
+
+		if q_feature_cache_uri_t != "" {
+			feature_cache_uri_t = q_feature_cache_uri_t
+		}
+
+		if q_tile_cache_uri_t != "" {
+			tile_cache_uri_t = q_tile_cache_uri_t
+		}
+
+		feature_cache_key := "Id"
+		tile_cache_key := "Path"
+
+		feature_cache_v := map[string]interface{}{
+			"key": feature_cache_key,
+		}
+
+		tile_cache_v := map[string]interface{}{
+			"key": tile_cache_key,
+		}
+
+		feature_cache, err := openCollection(ctx, feature_cache_uri_t, feature_cache_v)
+
+		if err != nil {
+			return nil, fmt.Errorf("could not open feature cache collection: %w", err)
+		}
+
+		tile_cache, err := openCollection(ctx, tile_cache_uri_t, tile_cache_v)
+
+		if err != nil {
+			return nil, fmt.Errorf("could not open tile cache collection: %w", err)
+		}
+
+		cache_manager_opts := &CacheManagerOptions{
+			FeatureCollection: feature_cache,
+			TileCollection:    tile_cache,
+			Logger:            logger,
+			CacheTTL:          cache_ttl,
+		}
+
+		cache_manager := NewCacheManager(ctx, cache_manager_opts)
+
+		db.cache_manager = cache_manager
+
+		db.enable_feature_cache = true
+		db.enable_tile_cache = true
+
 	}
 
 	return db, nil
@@ -230,15 +285,49 @@ func (db *PMTilesSpatialDatabase) PointInPolygonCandidatesWithChannels(ctx conte
 
 func (db *PMTilesSpatialDatabase) Disconnect(ctx context.Context) error {
 
-	if db.feature_cache != nil {
-		db.feature_cache.Close()
-	}
-
-	if db.ticker != nil {
-		db.ticker.Stop()
-	}
-
+	db.cache_manager.Close(ctx)
 	return nil
+}
+
+func (db *PMTilesSpatialDatabase) Read(ctx context.Context, path string) (io.ReadSeekCloser, error) {
+
+	if !db.enable_feature_cache {
+		return nil, fmt.Errorf("Not found")
+	}
+
+	id, uri_args, err := uri.ParseURI(path)
+
+	if err != nil {
+		return nil, fmt.Errorf("Failed to path %s, %w", path, err)
+	}
+
+	fname, err := uri.Id2Fname(id, uri_args)
+
+	if err != nil {
+		return nil, fmt.Errorf("Failed to derive filename from %s, %w", path, err)
+	}
+
+	fname = strings.Replace(fname, ".geojson", "", 1)
+
+	fc, err := db.cache_manager.GetFeatureCache(ctx, fname)
+
+	if err != nil {
+		return nil, fmt.Errorf("Failed to get feature cache for %s, %w", path, err)
+	}
+
+	r := strings.NewReader(fc.Body)
+
+	rsc, err := ioutil.NewReadSeekCloser(r)
+
+	if err != nil {
+		return nil, fmt.Errorf("Failed to create ReadSeekCloser for %s, %w", path, err)
+	}
+
+	return rsc, nil
+}
+
+func (db *PMTilesSpatialDatabase) ReaderURI(ctx context.Context, path string) string {
+	return path
 }
 
 func (db *PMTilesSpatialDatabase) spatialDatabaseFromTile(ctx context.Context, t maptile.Tile) (database.SpatialDatabase, error) {
@@ -259,19 +348,19 @@ func (db *PMTilesSpatialDatabase) spatialDatabaseFromTile(ctx context.Context, t
 
 	for idx, f := range features {
 
-		// props := f.Properties
-		// fmt.Printf("Index %f %s\n", props.MustFloat64("wof:id"), props.MustString("wof:name"))
-
 		body, err := f.MarshalJSON()
 
+		id_rsp := gjson.GetBytes(body, "properties.wof:id")
+		id := id_rsp.Int()
+
 		if err != nil {
-			return nil, fmt.Errorf("Failed to marshal JSON for feature at offset %d, %w", idx, err)
+			return nil, fmt.Errorf("Failed to marshal JSON for feature %d at offset %d, %w", id, idx, err)
 		}
 
 		err = spatial_db.IndexFeature(ctx, body)
 
 		if err != nil {
-			return nil, fmt.Errorf("Failed to index feature at offset %d, %w", idx, err)
+			return nil, fmt.Errorf("Failed to index feature %d at offset %d, %w", id, idx, err)
 		}
 	}
 
@@ -282,7 +371,9 @@ func (db *PMTilesSpatialDatabase) spatialDatabaseFromTile(ctx context.Context, t
 
 func (db *PMTilesSpatialDatabase) spatialDatabaseFromCoord(ctx context.Context, coord *orb.Point) (database.SpatialDatabase, error) {
 
-	z := maptile.Zoom(uint32(9)) // fix me
+	zoom := uint32(db.zoom)
+
+	z := maptile.Zoom(zoom)
 	t := maptile.At(*coord, z)
 
 	return db.spatialDatabaseFromTile(ctx, t)
@@ -292,13 +383,9 @@ func (db *PMTilesSpatialDatabase) featuresForTile(ctx context.Context, t maptile
 
 	path := fmt.Sprintf("/%s/%d/%d/%d.mvt", db.database, t.Z, t.X, t.Y)
 
-	if db.enable_feature_cache {
+	if db.enable_tile_cache {
 
-		tc := TileFeaturesCache{
-			Path: path,
-		}
-
-		err := db.feature_cache.Get(ctx, &tc)
+		tc, err := db.cache_manager.GetTileCache(ctx, path)
 
 		if err != nil {
 
@@ -308,26 +395,11 @@ func (db *PMTilesSpatialDatabase) featuresForTile(ctx context.Context, t maptile
 
 		} else {
 
-			features, err := tc.UnmarshalFeatures()
+			features, err := db.cache_manager.UnmarshalTileCache(ctx, tc)
 
 			if err != nil {
 				db.logger.Printf("Failed to unmarshal features for %s, %v", path, err)
 			} else {
-
-				go func() {
-
-					now := time.Now()
-
-					mods := docstore.Mods{
-						"LastAccessed": now.Unix(),
-					}
-
-					err := db.feature_cache.Update(ctx, &tc, mods)
-
-					if err != nil {
-						db.logger.Printf("Failed to update last access time for %s, %v", path, err)
-					}
-				}()
 
 				return features, nil
 			}
@@ -338,6 +410,14 @@ func (db *PMTilesSpatialDatabase) featuresForTile(ctx context.Context, t maptile
 
 	if status_code != 200 {
 		return nil, fmt.Errorf("Failed to get %s, unexpected status code %d", path, status_code)
+	}
+
+	// not sure what the semantics are here but it's not treated as an error in protomaps
+	// https://github.com/protomaps/go-pmtiles/blob/0ac8f97530b3367142cfd250585d60936d0ce643/pmtiles/loop.go#L296
+
+	if status_code == 204 {
+		features := make([]*geojson.Feature, 0)
+		return features, nil
 	}
 
 	layers, err := mvt.UnmarshalGzipped(body)
@@ -356,61 +436,59 @@ func (db *PMTilesSpatialDatabase) featuresForTile(ctx context.Context, t maptile
 		return nil, fmt.Errorf("Missing %s layer", db.database)
 	}
 
-	if db.enable_feature_cache {
+	wg := new(sync.WaitGroup)
 
-		go func() {
+	go func() {
 
-			tc, err := NewTileFeatureCache(path, fc[db.database].Features)
+		wg.Add(1)
+		defer wg.Done()
+
+		if db.enable_tile_cache {
+
+			_, err := db.cache_manager.CacheTile(ctx, path, fc[db.database].Features)
 
 			if err != nil {
 				db.logger.Printf("Failed to create new feature cache for %s, %v", path, err)
 			}
 
-			err = db.feature_cache.Put(ctx, tc)
+		} else if db.enable_feature_cache {
+
+			_, err := db.cache_manager.CacheFeatures(ctx, fc[db.database].Features)
 
 			if err != nil {
-				db.logger.Printf("Failed to put feature cache for %s, %v", path, err)
+				db.logger.Printf("Failed to create new feature cache for %s, %v", path, err)
 			}
-		}()
-	}
+
+		} else {
+			// pass
+		}
+
+	}()
+
+	wg.Wait()
 
 	return fc[db.database].Features, nil
 }
 
-func (db *PMTilesSpatialDatabase) pruneFeatureCache(ctx context.Context, t time.Time) error {
+func openCollection(ctx context.Context, uri_t string, values map[string]interface{}) (*docstore.Collection, error) {
 
-	db.logger.Printf("Prune feature cache older that %v\n", t)
+	t, err := uritemplates.Parse(uri_t)
 
-	ts := t.Unix()
-
-	q := db.feature_cache.Query()
-	q = q.Where("Created", "<=", ts)
-	q = q.Where("LastAccessed", "<=", ts)
-
-	iter := q.Get(ctx)
-
-	defer iter.Stop()
-
-	for {
-
-		var tc TileFeaturesCache
-
-		err := iter.Next(ctx, &tc)
-
-		if err == io.EOF {
-			break
-		} else if err != nil {
-			db.logger.Printf("Failed to get next iterator, %v", err)
-		} else {
-
-			db.logger.Printf("Prune %s\n", tc.Path)
-			err := db.feature_cache.Delete(ctx, &tc)
-
-			if err != nil {
-				db.logger.Printf("Failed to delete feature cache %s, %v", tc.Path, err)
-			}
-		}
+	if err != nil {
+		return nil, fmt.Errorf("Failed to parse URI template, %w", err)
 	}
 
-	return nil
+	col_uri, err := t.Expand(values)
+
+	if err != nil {
+		return nil, fmt.Errorf("Failed to expand URI template values, %w", err)
+	}
+
+	col, err := docstore.OpenCollection(ctx, col_uri)
+
+	if err != nil {
+		return nil, fmt.Errorf("Failed to open collection, %w", err)
+	}
+
+	return col, nil
 }
