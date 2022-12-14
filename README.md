@@ -111,6 +111,21 @@ $> curl -s http://localhost:8080/api/point-in-polygon \
 "94128"
 ```
 
+## AWS
+
+_AWS documentation is incomplete._
+
+### Lambda
+
+| Key | Value |
+| --- | --- |
+| WHOSONFIRST_ENABLE_CORS | true |
+| WHOSONFIRST_CORS_ORIGIN | * |
+| WHOSONFIRST_LOG_TIMINGS | true |
+| WHOSONFIRST_PROPERTIES_READER_URI | {spatial-database-uri} |
+| WHOSONFIRST_SERVER_URI | lambda:// |
+| WHOSONFIRST_SPATIAL_DATABASE_URI | pmtiles://?tiles=s3blob%3A%2F%2Fexample%3Fregion%3Dus-east-1%26prefix%3Dtiles%2F%26credentials%3Dexample&database=sfomuseum |
+
 ## See also
 
 * https://github.com/whosonfirst/go-whosonfirst-spatial-pmtiles
