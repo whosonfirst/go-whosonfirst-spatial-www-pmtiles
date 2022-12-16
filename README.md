@@ -151,7 +151,7 @@ $> bin/server \
 
 When you visit `http://localhost:8080` in your web browser you should see something like this:
 
-![](images/docs/pmtiles-www-tangram.png)
+![](docs/images/pmtiles-www-tangram.png)
 
 If you don't need, or want, to expose a user-facing interface simply remove the `-enable-www`, `-map-provider` and `-nextzen-apikey` flags. For example:
 
