@@ -4,7 +4,7 @@ go 1.18
 
 require (
 	github.com/whosonfirst/go-whosonfirst-spatial-pmtiles v0.0.12
-	github.com/whosonfirst/go-whosonfirst-spatial-www v0.0.41
+	github.com/whosonfirst/go-whosonfirst-spatial-www v0.0.42
 )
 
 require (
@@ -14,7 +14,7 @@ require (
 	github.com/aaronland/go-aws-session v0.0.6 // indirect
 	github.com/aaronland/go-http-bootstrap v0.1.0 // indirect
 	github.com/aaronland/go-http-leaflet v0.1.1 // indirect
-	github.com/aaronland/go-http-maps v0.0.7 // indirect
+	github.com/aaronland/go-http-maps v0.0.8 // indirect
 	github.com/aaronland/go-http-ping/v2 v2.0.0 // indirect
 	github.com/aaronland/go-http-rewrite v1.0.1 // indirect
 	github.com/aaronland/go-http-sanitize v0.0.6 // indirect

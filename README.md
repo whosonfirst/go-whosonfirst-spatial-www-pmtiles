@@ -8,6 +8,33 @@ Documentation is incomplete at this time.
 
 Please start with the [whosonfirst/go-whosonfirst-spatial-pmtiles](https://github.com/whosonfirst/go-whosonfirst-spatial-pmtiles) documentation.
 
+## Example
+
+```
+package main
+
+import (
+	"context"
+	_ "github.com/whosonfirst/go-whosonfirst-spatial-pmtiles"
+	"github.com/whosonfirst/go-whosonfirst-spatial-www/application/server"
+	"log"
+)
+
+func main() {
+
+	ctx := context.Background()
+	logger := log.Default()
+
+	err := server.Run(ctx, logger)
+
+	if err != nil {
+		logger.Fatal(err)
+	}
+}
+```
+
+Importantly this is a very thin wrapper around the application code defined in the [whosonfirst/go-whosonfirst-spatial-www](https://github.com/whosonfirst/go-whosonfirst-spatial-www) package to enable support for the [whosonfirst/go-whosonfirst-spatial-pmtiles](https://github.com/whosonfirst/go-whosonfirst-spatial-pmtiles) package.
+
 ## Tools
 
 ```
@@ -18,13 +45,13 @@ go build -mod vendor -o bin/server cmd/server/main.go
 ### server
 
 ```
-$> ./bin/server -h
+$> > ./bin/server -h
   -authenticator-uri string
     	A valid sfomuseum/go-http-auth URI. (default "null://")
   -cors-allow-credentials
-    	...
+    	Allow HTTP credentials to be included in CORS requests.
   -cors-origin value
-    	...
+    	One or more hosts to allow CORS requests from; may be a comma-separated list.
   -custom-placetypes string
     	A JSON-encoded string containing custom placetypes defined using the syntax described in the whosonfirst/go-whosonfirst-placetypes repository.
   -enable-cors
@@ -56,11 +83,11 @@ $> ./bin/server -h
   -leaflet-max-bounds string
     	An optional comma-separated bounding box ({MINX},{MINY},{MAXX},{MAXY}) to set the boundary for map views.
   -leaflet-tile-url string
-    	A valid Leaflet tile URL. Only necessary if -map-provider is "leaflet".
+    	A valid Leaflet 'tileLayer' layer URL. Only necessary if -map-provider is "leaflet".
   -log-timings
     	Emit timing metrics to the application's logger
   -map-provider string
-    	Valid options are: leaflet, protomaps, tangram
+    	The name of the map provider to use. Valid options are: leaflet, protomaps, tangram
   -nextzen-apikey string
     	A valid Nextzen API key. Only necessary if -map-provider is "tangram".
   -nextzen-style-url string
