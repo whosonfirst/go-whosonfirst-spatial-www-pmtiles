@@ -6,8 +6,6 @@ Go package implementing the `whosonfirst/go-whosonfirst-spatial-www` server appl
 
 Documentation is incomplete at this time.
 
-Please start with the [whosonfirst/go-whosonfirst-spatial-pmtiles](https://github.com/whosonfirst/go-whosonfirst-spatial-pmtiles) documentation.
-
 ## Example
 
 ```
