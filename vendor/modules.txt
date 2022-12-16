@@ -16,15 +16,21 @@ github.com/aaronland/go-aws-session
 ## explicit; go 1.16
 github.com/aaronland/go-http-bootstrap
 github.com/aaronland/go-http-bootstrap/static
-# github.com/aaronland/go-http-leaflet v0.1.0
+# github.com/aaronland/go-http-leaflet v0.1.1
 ## explicit; go 1.16
 github.com/aaronland/go-http-leaflet
 github.com/aaronland/go-http-leaflet/static
+# github.com/aaronland/go-http-maps v0.0.7
+## explicit; go 1.18
+github.com/aaronland/go-http-maps
+github.com/aaronland/go-http-maps/http/www
+github.com/aaronland/go-http-maps/provider
+github.com/aaronland/go-http-maps/static
 # github.com/aaronland/go-http-ping/v2 v2.0.0
 ## explicit; go 1.16
 github.com/aaronland/go-http-ping/v2
-# github.com/aaronland/go-http-rewrite v1.0.0
-## explicit; go 1.16
+# github.com/aaronland/go-http-rewrite v1.0.1
+## explicit; go 1.18
 github.com/aaronland/go-http-rewrite
 # github.com/aaronland/go-http-sanitize v0.0.6
 ## explicit; go 1.12
@@ -56,8 +62,8 @@ github.com/aaronland/go-sqlite-modernc
 ## explicit; go 1.18
 github.com/aaronland/go-sqlite/v2
 github.com/aaronland/go-sqlite/v2/database
-# github.com/aaronland/go-string v0.1.2
-## explicit; go 1.12
+# github.com/aaronland/go-string v1.0.0
+## explicit; go 1.16
 github.com/aaronland/go-string/dsn
 # github.com/aaronland/gocloud-blob-s3 v0.2.1
 ## explicit; go 1.16
@@ -298,6 +304,9 @@ github.com/mattn/go-isatty
 # github.com/mattn/go-runewidth v0.0.13
 ## explicit; go 1.9
 github.com/mattn/go-runewidth
+# github.com/mattn/go-sqlite3 v1.14.15
+## explicit; go 1.16
+github.com/mattn/go-sqlite3
 # github.com/mitchellh/colorstring v0.0.0-20190213212951-d06e56a500db
 ## explicit
 github.com/mitchellh/colorstring
@@ -369,6 +378,13 @@ github.com/sfomuseum/go-flags/multi
 # github.com/sfomuseum/go-http-auth v0.0.6
 ## explicit; go 1.19
 github.com/sfomuseum/go-http-auth
+# github.com/sfomuseum/go-http-protomaps v0.0.14
+## explicit; go 1.16
+github.com/sfomuseum/go-http-protomaps
+github.com/sfomuseum/go-http-protomaps/static
+# github.com/sfomuseum/go-sfomuseum-pmtiles v1.0.3
+## explicit; go 1.19
+github.com/sfomuseum/go-sfomuseum-pmtiles/http
 # github.com/sfomuseum/go-timings v1.2.1
 ## explicit; go 1.18
 github.com/sfomuseum/go-timings
@@ -387,6 +403,10 @@ github.com/tidwall/pretty
 # github.com/tidwall/sjson v1.2.5
 ## explicit; go 1.14
 github.com/tidwall/sjson
+# github.com/tilezen/go-tilepacks v0.0.0-20220729022432-5ee633f5bb6a
+## explicit; go 1.12
+github.com/tilezen/go-tilepacks/http
+github.com/tilezen/go-tilepacks/tilepack
 # github.com/whosonfirst/go-ioutil v1.0.2
 ## explicit; go 1.16
 github.com/whosonfirst/go-ioutil
@@ -449,7 +469,7 @@ github.com/whosonfirst/go-whosonfirst-spatial-pmtiles
 # github.com/whosonfirst/go-whosonfirst-spatial-sqlite v0.6.0
 ## explicit; go 1.18
 github.com/whosonfirst/go-whosonfirst-spatial-sqlite
-# github.com/whosonfirst/go-whosonfirst-spatial-www v0.0.40
+# github.com/whosonfirst/go-whosonfirst-spatial-www v0.0.41
 ## explicit; go 1.18
 github.com/whosonfirst/go-whosonfirst-spatial-www/application/server
 github.com/whosonfirst/go-whosonfirst-spatial-www/http

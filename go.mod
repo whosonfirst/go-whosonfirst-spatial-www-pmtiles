@@ -4,7 +4,7 @@ go 1.18
 
 require (
 	github.com/whosonfirst/go-whosonfirst-spatial-pmtiles v0.0.12
-	github.com/whosonfirst/go-whosonfirst-spatial-www v0.0.40
+	github.com/whosonfirst/go-whosonfirst-spatial-www v0.0.41
 )
 
 require (
@@ -13,9 +13,10 @@ require (
 	github.com/aaronland/go-aws-dynamodb v0.0.5 // indirect
 	github.com/aaronland/go-aws-session v0.0.6 // indirect
 	github.com/aaronland/go-http-bootstrap v0.1.0 // indirect
-	github.com/aaronland/go-http-leaflet v0.1.0 // indirect
+	github.com/aaronland/go-http-leaflet v0.1.1 // indirect
+	github.com/aaronland/go-http-maps v0.0.7 // indirect
 	github.com/aaronland/go-http-ping/v2 v2.0.0 // indirect
-	github.com/aaronland/go-http-rewrite v1.0.0 // indirect
+	github.com/aaronland/go-http-rewrite v1.0.1 // indirect
 	github.com/aaronland/go-http-sanitize v0.0.6 // indirect
 	github.com/aaronland/go-http-server v1.0.0 // indirect
 	github.com/aaronland/go-http-tangramjs v0.1.3 // indirect
@@ -25,7 +26,7 @@ require (
 	github.com/aaronland/go-roster v1.0.0 // indirect
 	github.com/aaronland/go-sqlite-modernc v0.0.1 // indirect
 	github.com/aaronland/go-sqlite/v2 v2.2.0 // indirect
-	github.com/aaronland/go-string v0.1.2 // indirect
+	github.com/aaronland/go-string v1.0.0 // indirect
 	github.com/aaronland/gocloud-blob-s3 v0.2.1 // indirect
 	github.com/aaronland/gocloud-docstore v0.0.3 // indirect
 	github.com/akrylysov/algnhsa v0.12.1 // indirect
@@ -66,6 +67,7 @@ require (
 	github.com/kballard/go-shellquote v0.0.0-20180428030007-95032a82bc51 // indirect
 	github.com/mattn/go-isatty v0.0.16 // indirect
 	github.com/mattn/go-runewidth v0.0.13 // indirect
+	github.com/mattn/go-sqlite3 v1.14.15 // indirect
 	github.com/mitchellh/colorstring v0.0.0-20190213212951-d06e56a500db // indirect
 	github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd // indirect
 	github.com/modern-go/reflect2 v1.0.2 // indirect
@@ -83,12 +85,15 @@ require (
 	github.com/sfomuseum/go-edtf v1.1.1 // indirect
 	github.com/sfomuseum/go-flags v0.10.0 // indirect
 	github.com/sfomuseum/go-http-auth v0.0.6 // indirect
+	github.com/sfomuseum/go-http-protomaps v0.0.14 // indirect
+	github.com/sfomuseum/go-sfomuseum-pmtiles v1.0.3 // indirect
 	github.com/sfomuseum/go-timings v1.2.1 // indirect
 	github.com/sfomuseum/iso8601duration v1.1.0 // indirect
 	github.com/tidwall/gjson v1.14.4 // indirect
 	github.com/tidwall/match v1.1.1 // indirect
 	github.com/tidwall/pretty v1.2.0 // indirect
 	github.com/tidwall/sjson v1.2.5 // indirect
+	github.com/tilezen/go-tilepacks v0.0.0-20220729022432-5ee633f5bb6a // indirect
 	github.com/whosonfirst/go-ioutil v1.0.2 // indirect
 	github.com/whosonfirst/go-reader v1.0.2 // indirect
 	github.com/whosonfirst/go-rfc-5646 v0.1.0 // indirect
