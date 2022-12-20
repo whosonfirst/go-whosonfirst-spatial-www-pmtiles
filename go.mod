@@ -3,7 +3,7 @@ module github.com/whosonfirst/go-whosonfirst-spatial-www-pmtiles
 go 1.18
 
 require (
-	github.com/whosonfirst/go-whosonfirst-spatial-pmtiles v0.0.14
+	github.com/whosonfirst/go-whosonfirst-spatial-pmtiles v0.0.15
 	github.com/whosonfirst/go-whosonfirst-spatial-www v0.0.43
 )
 
@@ -11,7 +11,7 @@ require (
 	github.com/NYTimes/gziphandler v1.1.1 // indirect
 	github.com/RoaringBitmap/roaring v1.2.1 // indirect
 	github.com/aaronland/go-aws-dynamodb v0.0.5 // indirect
-	github.com/aaronland/go-aws-session v0.0.6 // indirect
+	github.com/aaronland/go-aws-session v0.1.0 // indirect
 	github.com/aaronland/go-http-bootstrap v0.1.0 // indirect
 	github.com/aaronland/go-http-leaflet v0.1.1 // indirect
 	github.com/aaronland/go-http-maps v0.0.8 // indirect
@@ -27,11 +27,11 @@ require (
 	github.com/aaronland/go-sqlite-modernc v0.0.1 // indirect
 	github.com/aaronland/go-sqlite/v2 v2.2.0 // indirect
 	github.com/aaronland/go-string v1.0.0 // indirect
-	github.com/aaronland/gocloud-blob-s3 v0.2.1 // indirect
+	github.com/aaronland/gocloud-blob-s3 v0.2.2 // indirect
 	github.com/aaronland/gocloud-docstore v0.0.4 // indirect
 	github.com/akrylysov/algnhsa v0.12.1 // indirect
 	github.com/aws/aws-lambda-go v1.36.0 // indirect
-	github.com/aws/aws-sdk-go v1.44.151 // indirect
+	github.com/aws/aws-sdk-go v1.44.163 // indirect
 	github.com/aws/aws-sdk-go-v2 v1.16.8 // indirect
 	github.com/aws/aws-sdk-go-v2/aws/protocol/eventstream v1.4.3 // indirect
 	github.com/aws/aws-sdk-go-v2/config v1.15.15 // indirect
