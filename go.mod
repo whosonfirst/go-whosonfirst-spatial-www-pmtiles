@@ -4,7 +4,7 @@ go 1.18
 
 require (
 	github.com/whosonfirst/go-whosonfirst-spatial-pmtiles v0.0.15
-	github.com/whosonfirst/go-whosonfirst-spatial-www v0.0.43
+	github.com/whosonfirst/go-whosonfirst-spatial-www v0.0.44
 )
 
 require (
@@ -12,9 +12,9 @@ require (
 	github.com/RoaringBitmap/roaring v1.2.1 // indirect
 	github.com/aaronland/go-aws-dynamodb v0.0.5 // indirect
 	github.com/aaronland/go-aws-session v0.1.0 // indirect
-	github.com/aaronland/go-http-bootstrap v0.1.0 // indirect
-	github.com/aaronland/go-http-leaflet v0.1.1 // indirect
-	github.com/aaronland/go-http-maps v0.0.8 // indirect
+	github.com/aaronland/go-http-bootstrap v0.2.0 // indirect
+	github.com/aaronland/go-http-leaflet v0.1.3 // indirect
+	github.com/aaronland/go-http-maps v0.0.12 // indirect
 	github.com/aaronland/go-http-ping/v2 v2.0.0 // indirect
 	github.com/aaronland/go-http-rewrite v1.0.1 // indirect
 	github.com/aaronland/go-http-sanitize v0.0.6 // indirect
@@ -47,11 +47,13 @@ require (
 	github.com/aws/aws-sdk-go-v2/service/internal/presigned-url v1.9.9 // indirect
 	github.com/aws/aws-sdk-go-v2/service/internal/s3shared v1.13.9 // indirect
 	github.com/aws/aws-sdk-go-v2/service/s3 v1.27.2 // indirect
+	github.com/aws/aws-sdk-go-v2/service/ssm v1.27.6 // indirect
 	github.com/aws/aws-sdk-go-v2/service/sso v1.11.13 // indirect
 	github.com/aws/aws-sdk-go-v2/service/sts v1.16.10 // indirect
 	github.com/aws/smithy-go v1.12.0 // indirect
 	github.com/bits-and-blooms/bitset v1.2.0 // indirect
 	github.com/dustin/go-humanize v1.0.0 // indirect
+	github.com/fsnotify/fsnotify v1.5.4 // indirect
 	github.com/g8rswimmer/error-chain v1.0.0 // indirect
 	github.com/gogo/protobuf v1.3.2 // indirect
 	github.com/golang/groupcache v0.0.0-20210331224755-41bb18bfe9da // indirect
@@ -80,15 +82,17 @@ require (
 	github.com/protomaps/go-pmtiles v1.6.2 // indirect
 	github.com/remyoudompheng/bigfft v0.0.0-20200410134404-eec4a21b6bb0 // indirect
 	github.com/rivo/uniseg v0.2.0 // indirect
-	github.com/rs/cors v1.8.2 // indirect
+	github.com/rs/cors v1.8.3 // indirect
 	github.com/schollz/progressbar/v3 v3.11.0 // indirect
 	github.com/sfomuseum/go-edtf v1.1.1 // indirect
 	github.com/sfomuseum/go-flags v0.10.0 // indirect
 	github.com/sfomuseum/go-http-auth v0.0.6 // indirect
-	github.com/sfomuseum/go-http-protomaps v0.0.14 // indirect
+	github.com/sfomuseum/go-http-protomaps v0.0.16 // indirect
 	github.com/sfomuseum/go-sfomuseum-pmtiles v1.0.3 // indirect
+	github.com/sfomuseum/go-template v1.3.0 // indirect
 	github.com/sfomuseum/go-timings v1.2.1 // indirect
 	github.com/sfomuseum/iso8601duration v1.1.0 // indirect
+	github.com/sfomuseum/runtimevar v1.0.4 // indirect
 	github.com/tidwall/gjson v1.14.4 // indirect
 	github.com/tidwall/match v1.1.1 // indirect
 	github.com/tidwall/pretty v1.2.0 // indirect
@@ -128,7 +132,7 @@ require (
 	golang.org/x/xerrors v0.0.0-20220609144429-65e65417b02f // indirect
 	google.golang.org/api v0.91.0 // indirect
 	google.golang.org/genproto v0.0.0-20220802133213-ce4fa296bf78 // indirect
-	google.golang.org/grpc v1.48.0 // indirect
+	google.golang.org/grpc v1.51.0 // indirect
 	google.golang.org/protobuf v1.28.1 // indirect
 	lukechampine.com/uint128 v1.2.0 // indirect
 	modernc.org/cc/v3 v3.40.0 // indirect
