@@ -2,6 +2,10 @@
 
 Go package implementing the `whosonfirst/go-whosonfirst-spatial-www` server application with support for `whosonfirst/go-whosonfirst-spatial-pmtiles` databases.
 
+## Deprecated
+
+This package has been deprecated and the `server` tool (described below) has been moved in to the [whosonfirst-/go-whosonfirst-spatial-pmtiles](https://github.com/whosonfirst/go-whosonfirst-spatial-pmtiles) package.
+
 ## Documentation
 
 Documentation is incomplete at this time.
